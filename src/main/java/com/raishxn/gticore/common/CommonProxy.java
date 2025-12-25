@@ -75,18 +75,18 @@ public class CommonProxy {
 
     // As well as this.
     private void addMaterials(MaterialEvent event) {
-        //GTLMaterials.init();
+        GTIMaterials.init();
     }
 
     // This is optional, though.
     private void modifyMaterials(PostMaterialEvent event) {}
 
     private void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event) {
-        // GTLRecipeTypes.init();
+        GTIRecipeTypes.init();
     }
 
     private void registerRecipeConditions(GTCEuAPI.RegisterEvent<ResourceLocation, RecipeConditionType<?>> event) {
-        // GTLRecipeConditions.init();
+        //GTIRecipeConditions.init();
     }
 
     private void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {

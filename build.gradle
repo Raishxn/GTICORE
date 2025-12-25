@@ -191,6 +191,10 @@ dependencies {
         implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         }
     }
+    //avaritia
+    modImplementation("curse.maven:re-avaritia-623969:7362367")
+    //merequest
+    modImplementation("curse.maven:merequester-688367:5689932")
 }
 
 // See com.example.examplemod.mixin.DummyMixin for information about mixins

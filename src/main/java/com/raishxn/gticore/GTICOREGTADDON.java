@@ -1,24 +1,18 @@
 package com.raishxn.gticore;
 
+import com.raishxn.gticore.api.data.tag.GTITagPrefix;
+import com.raishxn.gticore.api.registry.GTIRegistry;
+import com.raishxn.gticore.common.data.*;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-
+import com.lowdragmc.lowdraglib.Platform;
 import net.minecraft.data.recipes.FinishedRecipe;
-
+import net.minecraft.resources.ResourceLocation;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
 @GTAddon
 public class GTICOREGTADDON implements IGTAddon {
-
-    @Override
-    public GTRegistrate getRegistrate() {
-        return GTICORE.EXAMPLE_REGISTRATE;
-    }
-
-    @Override
-    public void initializeAddon() {}
 
     @Override
     public String addonModId() {
@@ -26,31 +20,65 @@ public class GTICOREGTADDON implements IGTAddon {
     }
 
     @Override
-    public void registerTagPrefixes() {
-        // CustomTagPrefixes.init();
+    public GTRegistrate getRegistrate() {
+        return GTIRegistry.REGISTRATE;
     }
 
     @Override
-    public void addRecipes(Consumer<FinishedRecipe> provider) {
-        // CustomRecipes.init(provider);
+    public boolean requiresHighTier() {
+        return true;
+    }
+
+    @Override
+    public void initializeAddon() {
+        //GTIItems.init();
+        //GTIBlocks.init();
+    }
+
+    @Override
+    public void registerSounds() {
+        GTISoundEntries.init();
+    }
+
+    @Override
+    public void registerCovers() {
+        //GTLCovers.init();
     }
 
     @Override
     public void registerElements() {
-        // CustomElements.init();
+        GTIElements.init();
     }
 
-    // If you have custom ingredient types, uncomment this & change to match your capability.
-    // KubeJS WILL REMOVE YOUR RECIPES IF THESE ARE NOT REGISTERED.
-    /*
-     * public static final ContentJS<Double> PRESSURE_IN = new ContentJS<>(NumberComponent.ANY_DOUBLE,
-     * CustomRecipeCapabilities.PRESSURE, false);
-     * public static final ContentJS<Double> PRESSURE_OUT = new ContentJS<>(NumberComponent.ANY_DOUBLE,
-     * CustomRecipeCapabilities.PRESSURE, true);
-     * 
-     * @Override
-     * public void registerRecipeKeys(KJSRecipeKeyEvent event) {
-     * event.registerKey(CustomRecipeCapabilities.PRESSURE, Pair.of(PRESSURE_IN, PRESSURE_OUT));
-     * }
-     */
+    @Override
+    public void registerTagPrefixes() {
+        GTITagPrefix.init();
+    }
+
+    @Override
+    public void addRecipes(Consumer<FinishedRecipe> provider) {
+        /*GCyMRecipes.init(provider);
+        FuelRecipes.init(provider);
+        MachineRecipe.init(provider);
+        Misc.init(provider);
+        ElementCopying.init(provider);
+        StoneDustProcess.init(provider);
+        Lanthanidetreatment.init(provider);
+        CircuitRecipes.init(provider);
+        MixerRecipes.init(provider);
+        SkyTearsAndGregHeart.init(provider);
+        DimensionallyMixerRecipes.init(provider);*/
+    }
+
+    @Override
+    public void removeRecipes(Consumer<ResourceLocation> consumer) {
+       // RemoveRecipe.init(consumer);
+    }
+
+    @Override
+    public void registerFluidVeins() {
+        if (!Platform.isDevEnv()) {
+            GTIBedrockFluids.init();
+        }
+    }
 }
