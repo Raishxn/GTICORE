@@ -798,7 +798,13 @@ public final class Int128 extends Number implements Comparable<Int128> {
 
         return result.toString();
     }
+    public long getHigh() {
+        return this.high;
+    }
 
+    public long getLow() {
+        return this.low;
+    }
     @Override
     public int hashCode() {
         return Long.hashCode(high) * 31 + Long.hashCode(low);

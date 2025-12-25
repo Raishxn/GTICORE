@@ -20,10 +20,10 @@ import static net.minecraft.network.chat.Component.translatable;
 
 public class BlockMapSelectorWidget extends WidgetGroup {
 
-    public static final Component SC = translatable("gui.gtlcore.stellar_thermal_container");
-    public static final Component SEPM = translatable("gui.gtlcore.space_elevator_module");
-    public static final Component CAL = translatable("gui.gtlcore.component_assembly_casing");
-    public static final Component COIL = translatable("gui.gtlcore.coil");
+    public static final Component SC = translatable("gui.gticore.stellar_thermal_container");
+    public static final Component SEPM = translatable("gui.gticore.space_elevator_module");
+    public static final Component CAL = translatable("gui.gticore.component_assembly_casing");
+    public static final Component COIL = translatable("gui.gticore.coil");
 
     private final BiConsumer<String, Integer> onChanged;
     private List<Block> blocks;

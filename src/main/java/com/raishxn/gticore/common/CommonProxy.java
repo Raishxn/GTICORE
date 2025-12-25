@@ -2,11 +2,10 @@ package com.raishxn.gticore.common;
 
 import com.raishxn.gticore.GTICORE;
 import com.raishxn.gticore.common.data.*;
-//import com.raishxn.gticore.common.data.machines.GeneratorMachine;
 import com.raishxn.gticore.config.ConfigHolder;
-//import com.raishxn.gticore.integration.ae2.InfinityCellGuiHandler;
-//import com.raishxn.gticore.integration.ae2.storage.FastInfinityCellHandler;
-//import com.raishxn.gticore.integration.ae2.storage.InfinityCellHandler;
+import com.raishxn.gticore.integration.ae2.InfinityCellGuiHandler;
+import com.raishxn.gticore.integration.ae2.storage.FastInfinityCellHandler;
+import com.raishxn.gticore.integration.ae2.storage.InfinityCellHandler;
 import com.raishxn.gticore.network.GTINetworkHandler;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
@@ -50,9 +49,9 @@ public class CommonProxy {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        // StorageCells.addCellHandler(InfinityCellHandler.INSTANCE);
-        //StorageCells.addCellHandler(FastInfinityCellHandler.INSTANCE);
-        //StorageCells.addCellGuiHandler(new InfinityCellGuiHandler());
+        StorageCells.addCellHandler(InfinityCellHandler.INSTANCE);
+        StorageCells.addCellHandler(FastInfinityCellHandler.INSTANCE);
+        StorageCells.addCellGuiHandler(new InfinityCellGuiHandler());
         event.enqueueWork(this::postRegistrationInitialization).whenComplete((res, err) -> {
             if (err != null) {
                 AELog.warn(err);
@@ -61,7 +60,7 @@ public class CommonProxy {
     }
 
     public void postRegistrationInitialization() {
-        //GTIItems.InitUpgrades();
+        GTIItems.InitUpgrades();
         GTINetworkHandler.INSTANCE.init();
     }
 

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "gticore:block/power_module",
+    "up": "gticore:block/module",
+    "down": "gticore:block/module"
+  }
+}

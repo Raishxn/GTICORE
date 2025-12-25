@@ -10,7 +10,7 @@ import static com.raishxn.gticore.api.registry.GTIRegistry.REGISTRATE;
 
 public class GTICreativeModeTabs {
 
-    public static RegistryEntry<CreativeModeTab> GTL_CORE = REGISTRATE.defaultCreativeTab(GTICORE.MOD_ID,
+    public static RegistryEntry<CreativeModeTab> GTI_CORE = REGISTRATE.defaultCreativeTab(GTICORE.MOD_ID,
             builder -> builder.displayItems(new GTCreativeModeTabs.RegistrateDisplayItemsGenerator(GTICORE.MOD_ID, REGISTRATE))
                     .title(REGISTRATE.addLang("itemGroup", GTICORE.id("creative_tab"), "GTI Core"))
                     .icon(GTItems.BATTERY_ZPM_NAQUADRIA::asStack)

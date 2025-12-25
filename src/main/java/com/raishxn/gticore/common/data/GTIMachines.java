@@ -21,11 +21,11 @@ import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 public class GTIMachines {
 
     public static final BiConsumer<ItemStack, List<Component>> GTI_MODIFY = (stack, components) -> components
-            .add(Component.translatable("gtlcore.registry.modify")
+            .add(Component.translatable("gticore.registry.modify")
                     .withStyle(style -> style.withColor(TooltipHelper.RAINBOW.getCurrent())));
 
     public static final BiConsumer<ItemStack, List<Component>> GTI_ADD = (stack, components) -> components
-            .add(Component.translatable("gtlcore.registry.add")
+            .add(Component.translatable("gticore.registry.add")
                     .withStyle(style -> style.withColor(TooltipHelper.RAINBOW_SLOW.getCurrent())));
     static {
         REGISTRATE.creativeModeTab(() -> GTCreativeModeTabs.MACHINE);

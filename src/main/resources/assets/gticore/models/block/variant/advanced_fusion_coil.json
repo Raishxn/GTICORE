@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "gticore:block/advanced_compressed_fusion_coil"
+  }
+}

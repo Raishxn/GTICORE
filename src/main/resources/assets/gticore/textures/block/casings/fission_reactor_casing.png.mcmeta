@@ -1,0 +1,5 @@
+{
+    "ldlib": {
+        "connection": "gticore:block/casings/fission_reactor_casing_ctm"
+    }
+}

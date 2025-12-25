@@ -31,8 +31,8 @@ public class GTICOREGTADDON implements IGTAddon {
 
     @Override
     public void initializeAddon() {
-        //GTIItems.init();
-        //GTIBlocks.init();
+        GTIItems.init();
+        GTIBlocks.init();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GTICOREGTADDON implements IGTAddon {
 
     @Override
     public void registerCovers() {
-        //GTLCovers.init();
+        GTICovers.init();
     }
 
     @Override

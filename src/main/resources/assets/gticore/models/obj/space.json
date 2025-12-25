@@ -1,0 +1,9 @@
+{
+  "loader": "forge:obj",
+  "flip_v": true,
+  "model": "gticore:models/obj/space.obj",
+  "textures": {
+    "texture0": "gticore:block/obj/space_layer",
+    "particle":"gticore:block/obj/space_layer"
+  }
+}

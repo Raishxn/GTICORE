@@ -1,0 +1,5 @@
+{
+    "ldlib": {
+        "connection": "gticore:block/casings/sps_casing_ctm"
+    }
+}

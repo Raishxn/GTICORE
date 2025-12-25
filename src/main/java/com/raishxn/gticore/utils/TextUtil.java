@@ -8,7 +8,7 @@ import static net.minecraft.ChatFormatting.*;
 
 public class TextUtil {
 
-    public static final ChatFormatting[] GTL_CORE$VC = {
+    public static final ChatFormatting[] GTI_CORE$VC = {
             DARK_GRAY,
             GRAY,
             AQUA,

@@ -1,0 +1,9 @@
+{
+  "loader": "forge:obj",
+  "flip_v": true,
+  "model": "gticore:models/obj/climber.obj",
+  "textures": {
+    "texture0": "gticore:block/obj/climber_overlay",
+    "particle":"gticore:block/obj/climber_overlay"
+  }
+}
