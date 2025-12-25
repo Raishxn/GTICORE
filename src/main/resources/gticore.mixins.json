@@ -1,12 +1,13 @@
 {
   "required": true,
-  "package": "com.example.examplemod.mixin",
+  "package": "com.raishxn.gticore.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "mixins": [
-    "DummyMixin"
+    "mc.GuiGraphicsMixin"
   ],
   "client": [
+    "mc.LevelChunkMixin"
   ],
   "injectors": {
     "defaultRequire": 1
