@@ -4,12 +4,14 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "mixins": [
-    "mc.GuiGraphicsMixin"
-  ],
-  "client": [
+
     "mc.LevelChunkMixin"
   ],
+  "client": [
+    "mc.GuiGraphicsMixin"
+  ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 5
   }
 }
