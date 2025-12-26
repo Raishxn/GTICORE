@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gticore:block/create_casing"
+    }
+  }
+}

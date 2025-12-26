@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "gticore:block/variant/space_elevator_support"
+    },
+    "active=true": {
+      "model": "gticore:block/variant/space_elevator_support_active"
+    }
+  }
+}

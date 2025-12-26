@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gticore:block/process_machine_casing"
+    }
+  }
+}

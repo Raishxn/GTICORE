@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "gticore:item/contaminated_petri_dish"
+  }
+}

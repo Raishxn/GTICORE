@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "gticore:block/blaze_blast_furnace_casing"
+  }
+}

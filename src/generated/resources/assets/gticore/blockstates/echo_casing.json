@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gticore:block/echo_casing"
+    }
+  }
+}

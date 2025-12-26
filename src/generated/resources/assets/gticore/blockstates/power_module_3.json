@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "gticore:block/variant/power_module"
+    },
+    "active=true": {
+      "model": "gticore:block/variant/power_module_active"
+    }
+  }
+}

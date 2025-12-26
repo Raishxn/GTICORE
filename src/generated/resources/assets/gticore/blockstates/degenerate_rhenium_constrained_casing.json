@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gticore:block/degenerate_rhenium_constrained_casing"
+    }
+  }
+}
