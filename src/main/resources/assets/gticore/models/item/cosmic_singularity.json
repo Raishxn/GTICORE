@@ -1,0 +1,11 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "gticore:item/singularity/eternity_singularity",
+    "layer1": "gticore:item/singularity/eternity_singularity_overlay"
+  },
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "gticore:mask/eternal_singularity"
+  }
+}

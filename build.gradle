@@ -195,6 +195,12 @@ dependencies {
     modImplementation("curse.maven:re-avaritia-623969:7362367")
     //merequest
     modImplementation("curse.maven:merequester-688367:5689932")
+    //draconic evolution
+    modImplementation("curse.maven:draconic-evolution-223565:6793843")
+    modImplementation("curse.maven:brandons-core-231382:5422013")
+    modImplementation("curse.maven:codechicken-lib-1-8-242818:5753868")
+    //ender IO
+    modImplementation("curse.maven:ender-io-64578:7183516")
 }
 
 // See com.example.examplemod.mixin.DummyMixin for information about mixins
