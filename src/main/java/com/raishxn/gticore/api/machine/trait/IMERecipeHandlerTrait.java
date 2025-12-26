@@ -4,13 +4,14 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.lowdragmc.lowdraglib.syncdata.ISubscription;
 import com.raishxn.gticore.api.capability.IMERecipeHandler;
 
-import java.util.function.Predicate;
+// import java.util.function.Predicate; // Não é mais estritamente necessário aqui
 
 /**
  * @author Dragonators
  * @param <T>
  */
-public interface IMERecipeHandlerTrait<T extends Predicate<S>, S> extends IMERecipeHandler<T, S> {
+// ALTERAÇÃO: Removido "extends Predicate<S>"
+public interface IMERecipeHandlerTrait<T, S> extends IMERecipeHandler<T, S> {
 
     IO getIo();
 

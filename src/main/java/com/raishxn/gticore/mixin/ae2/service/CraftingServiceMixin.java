@@ -1,0 +1,25 @@
+package com.raishxn.gticore.mixin.ae2.service;
+
+import appeng.hooks.ticking.TickHandler;
+import appeng.me.service.CraftingService;
+import com.raishxn.gticore.config.ConfigHolder;
+import com.raishxn.gticore.utils.NumberUtils;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(CraftingService.class)
+public class CraftingServiceMixin {
+
+    @Unique
+    private static final int CRAFT_MASK = NumberUtils.nearestPow2Lookup(ConfigHolder.INSTANCE.ae2CraftingServiceUpdateInterval) - 1;
+
+    @Inject(method = "onServerEndTick", at = @At("HEAD"), cancellable = true, remap = false)
+    public void onServerEndTick(CallbackInfo ci) {
+        if ((TickHandler.instance().getCurrentTick() & CRAFT_MASK) != 0) {
+            ci.cancel();
+        }
+    }
+}

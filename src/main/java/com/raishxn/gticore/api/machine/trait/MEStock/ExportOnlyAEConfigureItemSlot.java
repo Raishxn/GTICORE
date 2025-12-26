@@ -4,11 +4,12 @@ import appeng.api.stacks.GenericStack;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import static com.lowdragmc.lowdraglib.LDLib.isRemote;
 
-public class ExportOnlyAEConfigureItemSlot extends ExportOnlyAEItemSlot implements IMESlot {
+public abstract class ExportOnlyAEConfigureItemSlot extends ExportOnlyAEItemSlot implements IMESlot {
 
     @Setter
     @Getter
@@ -42,4 +43,6 @@ public class ExportOnlyAEConfigureItemSlot extends ExportOnlyAEItemSlot implemen
         super.setConfig(config);
         if (!isRemote()) onConfigChanged.run();
     }
+
+    public abstract ItemStack extractItem(int slot, int amount, boolean simulate, boolean notifyChanges);
 }

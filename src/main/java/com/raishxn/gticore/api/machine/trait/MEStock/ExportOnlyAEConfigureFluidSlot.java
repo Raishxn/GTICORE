@@ -2,13 +2,14 @@ package com.raishxn.gticore.api.machine.trait.MEStock;
 
 import appeng.api.stacks.GenericStack;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import static com.lowdragmc.lowdraglib.LDLib.isRemote;
 
-public class ExportOnlyAEConfigureFluidSlot extends ExportOnlyAEFluidSlot implements IMESlot {
+public abstract class ExportOnlyAEConfigureFluidSlot extends ExportOnlyAEFluidSlot implements IMESlot {
 
     @Getter
     @Setter
@@ -42,4 +43,6 @@ public class ExportOnlyAEConfigureFluidSlot extends ExportOnlyAEFluidSlot implem
     public void setConfigWithoutNotify(@Nullable GenericStack config) {
         this.config = config;
     }
+
+    public abstract FluidStack drain(long maxDrain, boolean simulate, boolean notifyChanges);
 }

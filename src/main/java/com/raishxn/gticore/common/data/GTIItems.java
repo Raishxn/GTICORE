@@ -42,7 +42,7 @@ public class GTIItems {
     public static void init() {}
 
     static {
-        REGISTRATE.creativeModeTab(() -> GTICreativeModeTabs.GTI_CORE);
+        REGISTRATE.creativeModeTab(() -> GTICreativeModeTabs.GTI_CORE_ITEMS);
     }
 
     private static ItemEntry<StorageComponentItem> registerStorageComponentItem(int tier) {

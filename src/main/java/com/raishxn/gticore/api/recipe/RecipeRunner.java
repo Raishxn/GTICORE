@@ -1,0 +1,421 @@
+package com.raishxn.gticore.api.recipe;
+
+import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
+import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.minecraft.network.chat.Component;
+import com.raishxn.gticore.api.machine.trait.*;
+import com.raishxn.gticore.api.recipe.chance.LongChanceLogic;
+import com.raishxn.gticore.api.recipe.ingredient.LongIngredient;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 部分代码参考自gto
+ * @line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
+public final class RecipeRunner {
+
+    private RecipeRunner() {
+        throw new AssertionError("Utility class should not be instantiated");
+    }
+
+    public static RecipeResult handle(GTRecipe recipe, IO io, IRecipeCapabilityHolder holder,
+                                      Map<RecipeCapability<?>, List<Content>> entry,
+                                      Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches,
+                                      boolean simulated, RecipeCacheStrategy strategy) {
+        var recipeContent = fillContent(entry, recipe, holder, chanceCaches, simulated);
+
+        if (recipeContent.isEmpty()) {
+            return RecipeResult.SUCCESS;
+        }
+
+        boolean success = handleContentsInternal(io, recipe, holder, recipeContent, simulated, strategy);
+        return success ? RecipeResult.SUCCESS : RecipeResult.fail(null);
+    }
+
+    private static Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> fillContent(
+            Map<RecipeCapability<?>, List<Content>> entries,
+            GTRecipe recipe,
+            IRecipeCapabilityHolder holder,
+            Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches,
+            boolean simulated) {
+        var recipeContent = new Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>>();
+
+        for (var entry : entries.entrySet()) {
+            RecipeCapability<?> cap = entry.getKey();
+            if (!cap.doMatchInRecipe()) continue;
+
+            List<Content> contents = entry.getValue();
+            if (contents.isEmpty()) continue;
+
+            List<Content> chancedContents = new ObjectArrayList<>();
+            List<Object> contentList = recipeContent.computeIfAbsent(cap, c -> new ObjectArrayList<>());
+            for (Content cont : contents) {
+                if (simulated) {
+                    contentList.add(cont.content);
+                } else {
+                    if (cont.chance >= cont.maxChance) {
+                        contentList.add(cont.content);
+                    } else if (cont.chance != 0) {
+                        chancedContents.add(cont);
+                    }
+                }
+            }
+            if (!chancedContents.isEmpty()) {
+                ChanceBoostFunction function = recipe.getType().getChanceFunction();
+
+                // CORREÇÃO AQUI: Usando getDefinition().getTier()
+                int holderTier = (holder instanceof MetaMachine machine) ? machine.getDefinition().getTier() : 0;
+
+                var cache = chanceCaches.get(cap);
+                chancedContents = LongChanceLogic.OR.roll(chancedContents, function, ((IGTRecipe) recipe).getEuTier(), holderTier, cache, ((IGTRecipe) recipe).getRealParallels(), cap);
+                if (chancedContents != null) {
+                    for (Content cont : chancedContents) {
+                        contentList.add(cont.content);
+                    }
+                }
+            }
+            if (contentList.isEmpty()) recipeContent.remove(cap);
+        }
+
+        return recipeContent;
+    }
+
+    private static boolean handleContentsInternal(IO capIO, GTRecipe recipe, IRecipeCapabilityHolder holder,
+                                                  Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                                  boolean simulated, RecipeCacheStrategy strategy) {
+        if (!(holder instanceof IRecipeCapabilityMachine machine)) {
+            return false;
+        }
+
+        if (machine.emptyHandlePart()) {
+            return false;
+        }
+
+        if (capIO == IO.IN) {
+            // Use different handling based on cache strategy
+            if (strategy == RecipeCacheStrategy.NO_CACHE) {
+                return machine.isDistinct() ?
+                        handleInputDistinctNocache(machine, recipe, recipeContent, simulated) :
+                        handleInputNotDistinctNocache(machine, recipe, recipeContent, simulated);
+            } else {
+                return machine.isDistinct() ?
+                        handleInputDistinct(machine, recipe, recipeContent, simulated, strategy) :
+                        handleInputNotDistinct(machine, recipe, recipeContent, simulated, strategy);
+            }
+        } else {
+            recipeContent = handleMEOutput(machine.getMEOutputRecipeHandleParts(), recipeContent, simulated);
+            if (recipeContent.isEmpty()) return true;
+            recipeContent = handleNormalOutput(machine.getNormalRecipeHandlePart(IO.OUT), recipe, recipeContent, simulated);
+            if (recipeContent.isEmpty()) return true;
+            else {
+                if (simulated) {
+                    var builder = new StringBuilder();
+                    for (var it = recipeContent.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
+                        var entry = it.next();
+                        var cap = entry.getKey();
+                        for (var ing : entry.getValue()) {
+                            if (cap == ItemRecipeCapability.CAP) {
+                                if (ing instanceof LongIngredient li) {
+                                    builder.append(li.getItems()[0].getDisplayName().getString()).append("x ").append(li.getActualAmount()).append(" ");
+                                } else if (ing instanceof SizedIngredient si) {
+                                    builder.append(si.getItems()[0].getDisplayName().getString()).append("x ").append(si.getAmount()).append(" ");
+                                }
+                            } else if (cap == FluidRecipeCapability.CAP) {
+                                if (ing instanceof FluidIngredient fi) {
+                                    builder.append(fi.getStacks()[0].getDisplayName().getString()).append("x ").append(fi.getAmount()).append(" ");
+                                }
+                            }
+                        }
+                    }
+                    RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.Output.Content", builder)));
+                }
+                return false;
+            }
+        }
+    }
+
+    // ========================================
+    // Input
+    // ========================================
+
+    @SuppressWarnings("DuplicatedCode")
+    private static boolean handleInputDistinct(IRecipeCapabilityMachine machine, GTRecipe recipe,
+                                               Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                               boolean simulated, RecipeCacheStrategy strategy) {
+        // Priority 1: Try all cached handlers (active is first in iterator)
+        for (var it = machine.getAllCachedRecipeHandlesIter(recipe); it.hasNext();) {
+            var handler = it.next();
+
+            if (handler instanceof MEPatternRecipeHandlePart cachedMEPart) {
+                var slot = cachedMEPart.handleRecipe(recipe, recipeContent, simulated, strategy.cacheToMEInternal);
+                if (slot != -1) {
+                    if (simulated && strategy.cacheToHandlePartMap) {
+                        if (slot == -2) machine.tryAddAndActiveRhp(recipe, cachedMEPart);
+                        else machine.tryAddAndActiveMERhp(cachedMEPart, recipe, slot);
+                    }
+                    return true;
+                }
+            } else if (handler instanceof RecipeHandlePart cachedNormalPart) {
+                var result = cachedNormalPart.handleRecipe(IO.IN, recipe, recipeContent, simulated);
+                if (result.isEmpty()) {
+                    if (simulated && strategy.cacheToHandlePartMap) {
+                        machine.tryAddAndActiveRhp(recipe, cachedNormalPart);
+                    }
+                    return true;
+                }
+            }
+        }
+
+        var cachedHandlers = machine.getAllCachedRecipeHandles(recipe);
+
+        // Priority 2: Try uncached ME Pattern parts
+        for (var part : machine.getMEPatternRecipeHandleParts()) {
+            if (cachedHandlers.contains(part)) continue;
+            var slot = part.handleRecipe(recipe, recipeContent, simulated, strategy.cacheToMEInternal);
+            if (slot >= 0) {
+                if (simulated && strategy.cacheToHandlePartMap) {
+                    machine.tryAddAndActiveMERhp(part, recipe, slot);
+                }
+                return true;
+            }
+        }
+
+        // Priority 3: Try uncached normal parts
+        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+            if (cachedHandlers.contains(part)) continue;
+            var result = part.handleRecipe(IO.IN, recipe, recipeContent, simulated);
+            if (result.isEmpty()) {
+                if (simulated && strategy.cacheToHandlePartMap) {
+                    machine.tryAddAndActiveRhp(recipe, part);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @SuppressWarnings("DuplicatedCode")
+    private static boolean handleInputNotDistinct(IRecipeCapabilityMachine machine, GTRecipe recipe,
+                                                  Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                                  boolean simulated, RecipeCacheStrategy strategy) {
+        boolean fluidHandleResult = false;
+        boolean hasFluidTry = false;
+
+        // Priority 1: Try all cached handlers (active is first in iterator)
+        for (var it = machine.getAllCachedRecipeHandlesIter(recipe); it.hasNext();) {
+            var handler = it.next();
+
+            if (handler instanceof MEPatternRecipeHandlePart cachedMEPart) {
+                var slot = cachedMEPart.handleRecipe(recipe, recipeContent, simulated, strategy.cacheToMEInternal);
+                if (slot != -1) {
+                    if (simulated && strategy.cacheToHandlePartMap) {
+                        if (slot == -2) machine.tryAddAndActiveRhp(recipe, cachedMEPart);
+                        else machine.tryAddAndActiveMERhp(cachedMEPart, recipe, slot);
+                    }
+                    return true;
+                }
+            } else if (handler instanceof RecipeHandlePart cachedNormalPart) {
+                if (!hasFluidTry) {
+                    fluidHandleResult = tryNotDistinctFluid(machine.getSharedRecipeHandlePart(), recipe, recipeContent, simulated);
+                    hasFluidTry = true;
+                }
+                if (fluidHandleResult && tryNotDistinctItem(cachedNormalPart, recipe, recipeContent, simulated)) {
+                    if (simulated && strategy.cacheToHandlePartMap) {
+                        machine.tryAddAndActiveRhp(recipe, cachedNormalPart);
+                    }
+                    return true;
+                }
+            }
+        }
+
+        var cachedHandlers = machine.getAllCachedRecipeHandles(recipe);
+
+        // Priority 2: Try uncached ME Pattern parts
+        for (var part : machine.getMEPatternRecipeHandleParts()) {
+            if (cachedHandlers.contains(part)) continue;
+            var slot = part.handleRecipe(recipe, recipeContent, simulated, strategy.cacheToMEInternal);
+            if (slot >= 0) {
+                if (simulated && strategy.cacheToHandlePartMap) {
+                    machine.tryAddAndActiveMERhp(part, recipe, slot);
+                }
+                return true;
+            }
+        }
+
+        // Priority 3: Try uncached normal parts
+        RecipeHandlePart sharedPart = machine.getSharedRecipeHandlePart();
+
+        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList());
+        if (!fluidContent.isEmpty()) {
+            if (sharedPart == null) return false;
+            fluidContent = sharedPart.handleRecipe(IO.IN, recipe, FluidRecipeCapability.CAP, fluidContent, simulated);
+            if (fluidContent != null && !fluidContent.isEmpty()) return false;
+        }
+
+        List<?> itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
+        if (itemContent.isEmpty()) {
+            if (simulated && strategy.cacheToHandlePartMap) {
+                machine.tryAddAndActiveRhp(recipe, sharedPart);
+            }
+            return true;
+        }
+
+        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+            if (cachedHandlers.contains(part)) continue;
+            var result = part.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+            if (result == null || result.isEmpty()) {
+                if (simulated && strategy.cacheToHandlePartMap) {
+                    machine.tryAddAndActiveRhp(recipe, part);
+                }
+                return true;
+            }
+        }
+
+        if (sharedPart != null && !cachedHandlers.contains(sharedPart)) {
+            var result = sharedPart.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+            if (result == null || result.isEmpty()) {
+                if (simulated && strategy.cacheToHandlePartMap) {
+                    machine.tryAddAndActiveRhp(recipe, sharedPart);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean tryNotDistinctFluid(@Nullable RecipeHandlePart sharedPart, GTRecipe recipe,
+                                               Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                               boolean simulated) {
+        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList());
+        if (fluidContent.isEmpty()) return true;
+        if (sharedPart == null) return false;
+
+        fluidContent = sharedPart.handleRecipe(IO.IN, recipe, FluidRecipeCapability.CAP, fluidContent, simulated);
+        return fluidContent == null || fluidContent.isEmpty();
+    }
+
+    private static boolean tryNotDistinctItem(RecipeHandlePart cachedPart, GTRecipe recipe,
+                                              Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                              boolean simulated) {
+        List<?> itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
+        if (itemContent.isEmpty()) return true;
+
+        var result = cachedPart.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+        return result == null || result.isEmpty();
+    }
+
+    // ========================================
+    // Output
+    // ========================================
+
+    private static Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> handleNormalOutput(
+            List<RecipeHandlePart> handlers, GTRecipe recipe,
+            Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+            boolean simulated) {
+        if (handlers.isEmpty()) return recipeContent;
+
+        // Sort only if not already sorted (assuming handlers list is stable)
+        // Consider caching sorted handlers in machine if this becomes a bottleneck
+        handlers.sort(RecipeHandlePart.COMPARATOR.reversed());
+
+        for (var handler : handlers) {
+            recipeContent = handler.handleRecipe(IO.OUT, recipe, recipeContent, simulated);
+            if (recipeContent.isEmpty()) break;
+        }
+
+        return recipeContent;
+    }
+
+    private static Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> handleMEOutput(
+            List<MEIORecipeHandlePart<?>> meHandlers,
+            Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+            boolean simulated) {
+        for (MEIORecipeHandlePart<?> meHandler : meHandlers) {
+            recipeContent = meHandler.meHandleOutput(recipeContent, simulated);
+            if (recipeContent.isEmpty()) break;
+        }
+        return recipeContent;
+    }
+
+    // ========================================
+    // No-Cache versions (for DUMMY_RECIPES)
+    // Only handles input, output doesn't need nocache
+    // ========================================
+
+    private static boolean handleInputDistinctNocache(IRecipeCapabilityMachine machine, GTRecipe recipe,
+                                                      Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                                      boolean simulated) {
+        for (var part : machine.getMEPatternRecipeHandleParts()) {
+            var slot = part.handleRecipe(recipe, recipeContent, simulated, false);
+            if (slot >= 0) {
+                return true;
+            }
+        }
+
+        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+            var result = part.handleRecipe(IO.IN, recipe, recipeContent, simulated);
+            if (result.isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @SuppressWarnings("DuplicatedCode")
+    private static boolean handleInputNotDistinctNocache(IRecipeCapabilityMachine machine, GTRecipe recipe,
+                                                         Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
+                                                         boolean simulated) {
+        for (var part : machine.getMEPatternRecipeHandleParts()) {
+            var slot = part.handleRecipe(recipe, recipeContent, simulated, false);
+            if (slot >= 0) {
+                return true;
+            }
+        }
+
+        RecipeHandlePart sharedPart = machine.getSharedRecipeHandlePart();
+
+        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList());
+        if (!fluidContent.isEmpty()) {
+            if (sharedPart == null) return false;
+            fluidContent = sharedPart.handleRecipe(IO.IN, recipe, FluidRecipeCapability.CAP, fluidContent, simulated);
+            if (fluidContent != null && !fluidContent.isEmpty()) return false;
+        }
+
+        List<?> itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
+        if (itemContent.isEmpty()) {
+            return true;
+        }
+
+        // 直接遍历所有normal parts，不使用cache
+        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+            var result = part.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+            if (result == null || result.isEmpty()) {
+                return true;
+            }
+        }
+
+        if (sharedPart != null) {
+            var result = sharedPart.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+            return result == null || result.isEmpty();
+        }
+
+        return false;
+    }
+}

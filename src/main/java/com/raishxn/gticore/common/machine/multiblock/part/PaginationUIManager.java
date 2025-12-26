@@ -191,4 +191,27 @@ public class PaginationUIManager {
 
         recreatePatternSlots(this.paginationUI, startSlot, endSlot);
     }
+    public int getUiWidth() {
+        return this.uiWidth;
+    }
+
+    public int getUiHeight() {
+        return this.uiHeight;
+    }
+
+    public int getPatternsPerRow() {
+        return this.patternsPerRow;
+    }
+
+    public int getRowsPerPage() {
+        return this.rowsPerPage;
+    }
+
+    public int getMaxPages() {
+        return this.maxPages;
+    }
+
+    public int getMaxPatternCount() {
+        return this.maxPatternCount;
+    }
 }

@@ -63,7 +63,7 @@ public class GTIBlocks {
     }
 
     static {
-        REGISTRATE.creativeModeTab(() -> GTICreativeModeTabs.GTI_CORE);
+        REGISTRATE.creativeModeTab(() -> GTICreativeModeTabs.GTI_CORE_BLOCKS);
     }
 
     private static BlockEntry<CraftingUnitBlock> registerCraftingUnitBlock(int tier, CraftingUnitType Type) {
@@ -152,7 +152,7 @@ public class GTIBlocks {
                 .item(BlockItem::new)
                 .build()
                 .register();
-        REGISTRATE.setCreativeTab(Block, GTICreativeModeTabs.GTI_CORE);
+        REGISTRATE.setCreativeTab(Block, GTICreativeModeTabs.GTI_CORE_BLOCKS);
         map.put(tier, Block);
         return Block;
     }
@@ -176,7 +176,7 @@ public class GTIBlocks {
                 .model((ctx, prov) -> prov.withExistingParent(prov.name(ctx), GTICORE.id(baseModelPath)))
                 .build()
                 .register();
-        REGISTRATE.setCreativeTab(Block, GTICreativeModeTabs.GTI_CORE);
+        REGISTRATE.setCreativeTab(Block, GTICreativeModeTabs.GTI_CORE_BLOCKS);
         map.put(tier, Block);
         return Block;
     }
@@ -282,6 +282,10 @@ public class GTIBlocks {
                 .register();
     }
 
+
+
+
+
     @SuppressWarnings("all")
     private static BlockEntry<Block> createHermeticCasing(int tier) {
         String tierName = GTValues.VN[tier].toLowerCase(Locale.ROOT);
@@ -302,6 +306,10 @@ public class GTIBlocks {
     public static final BlockEntry<Block> HERMETIC_CASING_UIV = createHermeticCasing(GTValues.UIV);
     public static final BlockEntry<Block> HERMETIC_CASING_UXV = createHermeticCasing(GTValues.UXV);
     public static final BlockEntry<Block> HERMETIC_CASING_OpV = createHermeticCasing(GTValues.OpV);
+
+
+
+
 
     public static final BlockEntry<FusionCasingBlock> FUSION_CASING_MK4 = createFusionCasing(
             GTIFusionCasingBlock.CasingType.FUSION_CASING_MK4);
@@ -429,4 +437,102 @@ public class GTIBlocks {
             "block/variant/power_module", BlockMap.sepmMap, 4);
     public static final BlockEntry<ActiveBlock> POWER_MODULE_5 = GTIBlocks.createActiveTierCasing("power_module_5",
             "block/variant/power_module", BlockMap.sepmMap, 5);
+
+
+    // Adicione este método auxiliar no final da classe GTIBlocks se não existir,
+    // ou use o seu existente adaptando os nomes.
+    private static BlockEntry<Block> createCasingBlock(String name, String textureName) {
+        return REGISTRATE.block(name, Block::new)
+                .initialProperties(() -> Blocks.IRON_BLOCK)
+                .properties(p -> p.strength(5.0f, 10.0f).sound(SoundType.METAL).requiresCorrectToolForDrops())
+                .blockstate((ctx, prov) -> {
+                    prov.simpleBlock(ctx.getEntry(), prov.models().cubeAll(name, GTICORE.id("block/" + textureName)));
+                })
+                .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+                .simpleItem()
+                .register();
+    }
+    private static BlockEntry<Block> createCasingBlock(String name) {
+        return createCasingBlock(name, name);
+    }
+    public static final BlockEntry<Block> ACCELERATED_PIPELINE = createCasingBlock("accelerated_pipeline");
+    public static final BlockEntry<Block> AGGREGATION_CORE = createCasingBlock("aggregation_core", "aggregatione_core");
+    public static final BlockEntry<Block> ANNIHILATE_CORE = createCasingBlock("annihilate_core");
+    public static final BlockEntry<Block> ANTIMATTER_CHARGE = createCasingBlock("antimatter_charge");
+
+    // Madeiras / Plantas (Ajustei propriedades para madeira/planta)
+    public static final BlockEntry<Block> BARNARDA_LEAVES = REGISTRATE.block("barnarda_leaves", Block::new)
+            .initialProperties(() -> Blocks.OAK_LEAVES).simpleItem().register();
+    public static final BlockEntry<Block> BARNARDA_PLANKS = REGISTRATE.block("barnarda_planks", Block::new)
+            .initialProperties(() -> Blocks.OAK_PLANKS).simpleItem().register();
+    // Nota: Logs geralmente precisam de rotação (createLogBlock), usando casing simples por enquanto:
+    public static final BlockEntry<Block> BARNARDA_LOG = createCasingBlock("barnarda_log", "barnarda_log_side");
+
+    public static final BlockEntry<Block> CERES_GRUNT = createCasingBlock("ceres_grunt", "ceresgrunt");
+    public static final BlockEntry<Block> CERES_STONE = createCasingBlock("ceres_stone", "ceresstone");
+    public static final BlockEntry<Block> CHAIN_COMMAND_BLOCK_BROKEN = createCasingBlock("chain_command_block_broken");
+    public static final BlockEntry<Block> COMMAND_BLOCK_BROKEN = createCasingBlock("command_block_broken");
+    public static final BlockEntry<Block> CONTAINMENT_FIELD_GENERATOR = createCasingBlock("containment_field_generator");
+    public static final BlockEntry<Block> CREATE_AGGREGATION_CORE = createCasingBlock("create_aggregation_core", "create_aggregatione_core");
+    public static final BlockEntry<Block> CREATE_HPCA_COMPONENT = createCasingBlock("create_hpca_component");
+    public static final BlockEntry<Block> DIMENSION_CREATION_CASING = createCasingBlock("dimension_creation_casing");
+    public static final BlockEntry<Block> DIMENSIONAL_BRIDGE_CASING = createCasingBlock("dimensional_bridge_casing");
+    public static final BlockEntry<Block> DIMENSIONAL_STABILITY_CASING = createCasingBlock("dimensional_stability_casing");
+    public static final BlockEntry<Block> DRACONIUM_BLOCK_CHARGED = createCasingBlock("draconium_block_charged");
+    public static final BlockEntry<Block> DYSON_CONTROL_TOROID = createCasingBlock("dyson_control_toroid");
+    public static final BlockEntry<Block> DYSON_DEPLOYMENT_CASING = createCasingBlock("dyson_deployment_casing");
+    public static final BlockEntry<Block> DYSON_DEPLOYMENT_CORE = createCasingBlock("dyson_deployment_core");
+    public static final BlockEntry<Block> DYSON_DEPLOYMENT_MAGNET = createCasingBlock("dyson_deployment_magnet"); // Assumindo textura padrão
+    public static final BlockEntry<Block> DYSON_RECEIVER_CASING = createCasingBlock("dyson_receiver_casing");
+    public static final BlockEntry<Block> ENCELADUS_STONE = createCasingBlock("enceladus_stone", "enceladusstone");
+    public static final BlockEntry<Block> ENDER_OBSIDIAN = createCasingBlock("ender_obsidian");
+    public static final BlockEntry<Block> ESSENCE_BLOCK = createCasingBlock("essence_block");
+    public static final BlockEntry<Block> FLOTATION_CELL = createCasingBlock("flotation_cell");
+
+    // Vidros geralmente usam render layer 'translucent' ou 'cutout'
+    public static final BlockEntry<Block> FORCE_FIELD_GLASS = REGISTRATE.block("force_field_glass", Block::new)
+            .initialProperties(() -> Blocks.GLASS).addLayer(() -> RenderType::cutout)
+            .simpleItem().register();
+
+    public static final BlockEntry<Block> GANYMEDE_GRUNT = createCasingBlock("ganymede_grunt", "ganymedegrunt");
+    public static final BlockEntry<Block> GANYMEDE_STONE = createCasingBlock("ganymede_stone", "ganymedestone");
+    public static final BlockEntry<Block> HASTELLOY_N_75_CASING = createCasingBlock("hastelloy_n_75_casing");
+    public static final BlockEntry<Block> HASTELLOY_N_75_GEARBOX = createCasingBlock("hastelloy_n_75_gearbox");
+    public static final BlockEntry<Block> HASTELLOY_N_75_PIPE = createCasingBlock("hastelloy_n_75_pipe");
+    public static final BlockEntry<Block> HIGH_STRENGTH_CONCRETE = createCasingBlock("high_strength_concrete");
+    public static final BlockEntry<Block> HOLLOW_CASING = createCasingBlock("hollow_casing");
+    public static final BlockEntry<Block> INCONEL_625_CASING = createCasingBlock("inconel_625_casing");
+    public static final BlockEntry<Block> INCONEL_625_GEARBOX = createCasingBlock("inconel_625_gearbox");
+    public static final BlockEntry<Block> INCONEL_625_PIPE = createCasingBlock("inconel_625_pipe");
+    public static final BlockEntry<Block> INFUSED_OBSIDIAN = createCasingBlock("infused_obsidian");
+    public static final BlockEntry<Block> INTERNAL_SUPPORT = createCasingBlock("internal_support");
+    public static final BlockEntry<Block> IO_ASH = createCasingBlock("io_ash", "ioash");
+    public static final BlockEntry<Block> IO_STONE = createCasingBlock("io_stone", "iostone");
+    public static final BlockEntry<Block> LASER_COOLING_CASING = createCasingBlock("laser_cooling_casing");
+    public static final BlockEntry<Block> LEPTONIC_CHARGE = createCasingBlock("leptonic_charge");
+    public static final BlockEntry<Block> MACHINE_CASING_CIRCUIT_ASSEMBLY_LINE = createCasingBlock("machine_casing_circuit_assembly_line");
+    public static final BlockEntry<Block> MACHINE_CASING_GRINDING_HEAD = createCasingBlock("machine_casing_grinding_head");
+    public static final BlockEntry<Block> MODULE_CONNECTOR = createCasingBlock("module_connector");
+    public static final BlockEntry<Block> MOLECULAR_COIL = createCasingBlock("molecular_coil"); // Mantive pois parece máquina, não aquecedor
+    public static final BlockEntry<Block> MOTOR_GLOW = createCasingBlock("motor_glow");
+    public static final BlockEntry<Block> NAQUADRIA_CHARGE = createCasingBlock("naquadria_charge");
+    public static final BlockEntry<Block> NEUTRONIUM_GEARBOX = createCasingBlock("neutronium_gearbox");
+    public static final BlockEntry<Block> NEUTRONIUM_PIPE_CASING = createCasingBlock("neutronium_pipe_casing");
+    public static final BlockEntry<Block> PLUTO_GRUNT = createCasingBlock("pluto_grunt", "plutogrunt");
+    public static final BlockEntry<Block> PLUTO_STONE = createCasingBlock("pluto_stone", "plutostone");
+    public static final BlockEntry<Block> QUANTUM_CHROMODYNAMIC_CHARGE = createCasingBlock("quantum_chromodynamic_charge");
+    public static final BlockEntry<Block> REACTOR_CORE = createCasingBlock("reactor_core");
+    public static final BlockEntry<Block> RED_STEEL_CASING = createCasingBlock("red_steel_casing", "red_steel_casing_side");
+    public static final BlockEntry<Block> RESTRAINT_DEVICE = createCasingBlock("restraint_device");
+    public static final BlockEntry<Block> SHINING_OBSIDIAN = createCasingBlock("shining_obsidian");
+    public static final BlockEntry<Block> SPACETIME_ASSEMBLY_LINE_CASING = createCasingBlock("spacetime_assembly_line_casing");
+    public static final BlockEntry<Block> SPACETIME_ASSEMBLY_LINE_UNIT = createCasingBlock("spacetime_assembly_line_unit");
+    public static final BlockEntry<Block> SPACETIME_COMPRESSION_FIELD_GENERATOR = createCasingBlock("spacetime_compression_field_generator");
+    public static final BlockEntry<Block> SPACETIME_BENDING_CORE = createCasingBlock("spacetime_bending_core", "spacetimebendingcore");
+    public static final BlockEntry<Block> SPACETIME_CONTINUUM_RIPPER = createCasingBlock("spacetime_continuum_ripper", "spacetimecontinuumripper");
+    public static final BlockEntry<Block> SPEEDING_PIPE = createCasingBlock("speeding_pipe", "speeding_pipe_side");
+    public static final BlockEntry<Block> STEAM_ASSEMBLY_BLOCK = createCasingBlock("steam_assembly_block");
+    public static final BlockEntry<Block> TITAN_GRUNT = createCasingBlock("titan_grunt", "titangrunt");
+    public static final BlockEntry<Block> TITAN_STONE = createCasingBlock("titan_stone", "titanstone");
+    public static final BlockEntry<Block> VARIATION_WOOD = createCasingBlock("variation_wood");
 }

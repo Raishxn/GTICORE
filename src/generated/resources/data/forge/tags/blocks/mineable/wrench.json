@@ -1,5 +1,14 @@
 {
   "values": [
+    "gticore:abyssalalloy_coil_block",
+    "gticore:titansteel_coil_block",
+    "gticore:starmetal_coil_block",
+    "gticore:naquadriatictaranium_coil_block",
+    "gticore:hypogen_coil_block",
+    "gticore:eternity_coil_block",
+    "gticore:infinity_coil_block",
+    "gticore:uruium_coil_block",
+    "gticore:adamantine_coil_block",
     "gticore:uev_hermetic_casing",
     "gticore:uiv_hermetic_casing",
     "gticore:uxv_hermetic_casing",

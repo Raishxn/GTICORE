@@ -11,17 +11,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
+// import java.util.function.Predicate; // Não é mais estritamente necessário aqui, mas pode manter se quiser
 
 /**
  * @author Dragonators
  *
- *         ME样板总成配方处理接口
- *         支持基于slot的配方处理和内容管理
+ * ME样板总成配方处理接口
+ * 支持基于slot的配方处理和内容管理
  *
  * @param <T> Ingredient/FluidIngredient
  */
-public interface IMERecipeHandler<T extends Predicate<S>, S> extends IFilteredHandler<T> {
+// ALTERAÇÃO AQUI: Removido "extends Predicate<S>"
+public interface IMERecipeHandler<T, S> extends IFilteredHandler<T> {
 
     /**
      * @return ItemCAP/FluidCAP
