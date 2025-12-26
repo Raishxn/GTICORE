@@ -15,6 +15,8 @@ import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.raishxn.gticore.GTICORE;
+import com.raishxn.gticore.common.block.GTICoilBlock;
+import com.raishxn.gticore.common.blockentity.GTICoilBlockEntity;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
@@ -25,6 +27,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -246,6 +249,37 @@ public class GTIBlocks {
                 .register();
         ALL_FUSION_CASINGS.put(casingType, casingBlock);
         return casingBlock;
+    }
+
+    public static final BlockEntityEntry<GTICoilBlockEntity> GTI_COIL_BLOCK_ENTITY = REGISTRATE
+            .blockEntity("gti_coil_block", GTICoilBlockEntity::new)
+            .register();
+
+    // Registro dos Blocos de Bobina
+    public static final BlockEntry<GTICoilBlock> ABYSSALALLOY_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.ABYSSALALLOY);
+    public static final BlockEntry<GTICoilBlock> TITANSTEEL_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.TITANSTEEL);
+    public static final BlockEntry<GTICoilBlock> STARMETAL_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.STARMETAL);
+    public static final BlockEntry<GTICoilBlock> NAQUADRIATICTARANIUM_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.NAQUADRIATICTARANIUM);
+    public static final BlockEntry<GTICoilBlock> HYPOGEN_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.HYPOGEN);
+    public static final BlockEntry<GTICoilBlock> ETERNITY_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.ETERNITY);
+    public static final BlockEntry<GTICoilBlock> INFINITY_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.INFINITY);
+    public static final BlockEntry<GTICoilBlock> URUIUM_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.URUIUM);
+    public static final BlockEntry<GTICoilBlock> ADAMANTINE_COIL_BLOCK = createCoilBlock(GTICoilBlock.CoilType.ADAMANTINE);
+
+    private static BlockEntry<GTICoilBlock> createCoilBlock(GTICoilBlock.CoilType coilType) {
+        var builder = REGISTRATE.block(coilType.getName() + "_coil_block", p -> new GTICoilBlock(p, coilType))
+                .initialProperties(() -> Blocks.IRON_BLOCK)
+                .properties(p -> p.strength(5.0f, 10.0f).requiresCorrectToolForDrops())
+                .tag(BlockTags.MINEABLE_WITH_PICKAXE);
+        if (GTToolType.WRENCH.harvestTags != null) {
+            for (TagKey<Block> tag : GTToolType.WRENCH.harvestTags) {
+                builder.tag(tag);
+            }
+        }
+        return builder
+                .item()
+                .build()
+                .register();
     }
 
     @SuppressWarnings("all")

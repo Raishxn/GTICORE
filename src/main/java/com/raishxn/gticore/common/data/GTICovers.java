@@ -17,8 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Locale;
 
 public class GTICovers {
-
-    // Fix: Adicionado o renderizador correto (IOCoverRenderer) envolto em lambdas () -> () ->
     public static final CoverDefinition ELECTRIC_PUMP_MAX = GTCovers.register(
             ResourceLocation.parse("pump.max"),
             (def, coverable, side) -> new PumpCover(def, coverable, side, GTValues.MAX),
