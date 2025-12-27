@@ -2,7 +2,7 @@
 
 Core mod for the Infinity Legacy modpack.
 
-## License
+## Code
 
-All code is under LGPL3, except the included FastNoiseLite library, which is under MIT. The LGPL3 license is available under LICENSE, and a copy of the MIT license under LICENSE-MIT.
-Credits
+A Some multiblock ports from GregTech New Horizons, GregTech Odyssey and GregTech Leisure.
+
